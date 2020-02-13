@@ -15,4 +15,10 @@ CHIP DMux {
 
     PARTS:
     // Put your code here:
+	// https://www.wikizeroo.org/index.php?q=aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvTkFORF9sb2dpYw
+	Nand(a=sel,b=sel,out=nandSel);
+	Nand(a=in,b=nandSel,out=inputNandA);
+	Nand(a=sel,b=in, out=inputNandB);
+	Nand(a=inputNandA,b=inputNandA,out=a);
+	Nand(a=inputNandB,b=inputNandB,out=b);
 }

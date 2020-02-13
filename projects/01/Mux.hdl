@@ -14,5 +14,10 @@ CHIP Mux {
     OUT out;
 
     PARTS:
+	// https://www.wikizeroo.org/index.php?q=aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvTkFORF9sb2dpYw
     // Put your code here:
+	Nand(a=sel,b=sel,out=nandSel);
+	Nand(a=a,b=nandSel,out=nandAnandSel);
+	Nand(a=b,b=sel,out=nandBSel);
+	Nand(a=nandAnandSel,b=nandBSel,out=out);
 }

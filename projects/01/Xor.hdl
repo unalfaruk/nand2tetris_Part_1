@@ -13,5 +13,10 @@ CHIP Xor {
     OUT out;
 
     PARTS:
+	// https://en.wikipedia.org/wiki/XOR_gate
     // Put your code here:
+	Nand(a=a,b=b,out=nandFirst);
+	Nand(a=a,b=nandFirst,out=nandTop);
+	Nand(a=nandFirst,b=b,out=nandBotom);
+	Nand(a=nandTop,b=nandBotom,out=out);
 }
