@@ -14,7 +14,6 @@
  */
 
 CHIP ARegister {
-
     IN  in[16], load;
     OUT out[16];
 

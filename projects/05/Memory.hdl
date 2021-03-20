@@ -27,5 +27,28 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+	//The bast way for solution:
+	//DMux4Way(in = load, sel = address[13..14], a = loadA, b = loadB, c = loadSCR, d = loadKBD);
+	//
+    // 00|01 
+    //Or(a = loadA, b = loadB, out = loadRAM);
+	
+    // Put your code here:	
+
+	//I tried to solve by another way
+	Not(in=address[14],out=readyLoadRAM); //for RAM, address[14] needs to be 0
+	And(a=load,b=readyLoadRAM, out=loadRAM);
+	
+	And(a=address[14],b=address[13], out=readyLoadKBD); //for KBD, address[13,14] needs to be 1
+	And(a=load,b=readyLoadKBD, out=loadKBD);
+	
+	Not(in=loadKBD, out=readyForScreen);
+	And(a=readyForScreen,b=address[14], out=readyLoadSCR); //if address[14]=1 and not address[13]=1.
+	And(a=load,b=readyLoadSCR, out=loadSCR);
+	
+	RAM16K(in=in, load=loadRAM, address=address[0..13], out=outRAM);
+	Screen(in=in, load=loadSCR, address=address[0..12], out=outSCR);
+	Keyboard(out=outKBD);
+	
+	Mux4Way16(a = outRAM, b = outRAM, c = outSCR, d = outKBD, sel = address[13..14], out = out);
 }

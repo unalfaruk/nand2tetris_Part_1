@@ -40,4 +40,52 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+	//111a cccc ccdd djjj
+	//ALU(x= ,y= ,zx= ,nx= ,zy= ,ny= ,f= ,no= ,out= ,zr= ,ng= ) /* Hack ALU */
+	
+	//ALU(x= ,y= ,zx= ,nx= ,zy= ,ny= ,f(sum)= ,no(~out)= ,out= ,zr= ,ng= ) /* Hack ALU */	
+	
+	Not(in=instruction[15], out= isA);
+	Not(in=isA, out=isC);
+	
+	And(a=isC, b=instruction[5], out=isLoadOutALU);
+	Mux16(a=instruction,b=outALU, sel=isLoadOutALU, out=inAReg);
+	
+	Or(a=isA, b=instruction[5], out=storeAReg);
+	ARegister(in=inAReg, load=storeAReg, out=outAReg, out[0..14]=addressM);
+	
+	Mux16(a=outAReg, b=inM, sel=instruction[12], out=outMuxAM);
+	//DRegister(in=outALU, load=instruction[4], out=ALUInputFromDReg);
+	
+	And(a=instruction[3], b=isC, out=writeM);
+	And(a=instruction[4], b=isC, out=storeDReg);
+	
+	DRegister(in=outALU,load=storeDReg,out=outDReg);
+	
+	
+	
+	And(a=instruction[11], b=isC, out=zx);
+	And(a=instruction[10], b=isC, out=nx);
+	And(a=instruction[9], b=isC, out=zy);
+	And(a=instruction[8], b=isC, out=ny);
+	And(a=instruction[7], b=isC, out=f);
+	And(a=instruction[6], b=isC, out=no);
+	
+	ALU(x=outDReg, y=outMuxAM, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, out=outALU, out=outM, zr=zr, ng=ng);
+
+	
+	Or(a=zr,b=ng,out=nPos);
+    Not(in=nPos,out=pos);
+
+    And(a=instruction[0],b=pos,out=JGT);
+    And(a=instruction[1],b=zr,out=JEQ);
+    And(a=instruction[2],b=ng,out=JLT);
+
+    Or(a=JGT,b=JEQ,out=JGTJEQ);
+    Or(a=JGTJEQ,b=JLT,out=JGTJEQJLT);
+
+    And(a=JGTJEQJLT,b=isC,out=isJump);	
+	
+	
+	PC(in=outAReg, load=isJump, inc=true, reset=reset, out[0..14]=pc);
 }
